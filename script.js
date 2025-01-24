@@ -1,5 +1,25 @@
 console.log("Lets write some js");
+// Define a single Audio object to manage playback globally
+let currentsong = new Audio();
 
+
+
+function convertSecondsToMinutes(seconds) {
+    // Use Math.floor to remove the decimal part of the seconds
+    const totalSeconds = Math.floor(seconds);
+
+    // Calculate minutes
+    const minutes = Math.floor(totalSeconds / 60);
+
+    // Calculate remaining seconds
+    const remainingSeconds = totalSeconds % 60;
+
+    // Format seconds to always be two digits (e.g., 05 instead of 5)
+    const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
+
+    // Return the formatted string
+    return `${minutes}:${formattedSeconds}`;
+}
 
 async function getSongs() {
 
@@ -11,7 +31,7 @@ async function getSongs() {
 
     // Log the Response object to the console to inspect its properties.
     // The Response object contains information like status, headers, etc.
-    console.log(a);
+    // console.log(a);
 
     // Extract the response body as plain text.
     // 'await' ensures the operation completes before assigning the result to 'response'.
@@ -50,36 +70,106 @@ async function getSongs() {
             songs.push(element.href.split("/mysongs/")[1]);
         }
     }
-
+    
     // Return the array of song names/links that were extracted and filtered.
     return songs;
-
+    
 }
+
+// Function to play music when a song is clicked
+const playmusic = (track , pause = false) => {
+    // SCENARIO 1: Using a single Audio object (currentsong)
+    // - Here, currentsong is reused for all tracks.
+    // - Updating currentsong.src will automatically stop any currently playing song and start the new one.
+    currentsong.src = "/mysongs/" + track;
+
+    // SCENARIO 2: Creating a new Audio object inside the function
+    // - If we declare 'let audio = new Audio()' here, a new Audio object will be created each time.
+    // - This would allow multiple songs to play simultaneously unless the previous one is explicitly paused.
+    //
+    // Example of this alternate scenario:
+    // let audio = new Audio("/mysongs/" + track);
+    // audio.play();
+    if (pause == false) {
+        currentsong.play();
+        play.src = "/img/pause.svg"
+        
+    }
+    document.querySelector(".songinfo").innerHTML = track.replaceAll("%20", " ")
+    document.querySelector(".songtime").innerHTML = `00:00/00:00`
+};
 
 async function main() {
 
     //To get the list of all the songs
     let songs = await getSongs();
-    console.log(songs);
+    // console.log(songs);
+    playmusic(songs[0] , true)
 
     let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
     console.log(songUL);
 
 
     for (const song of songs) {
-        songUL.innerHTML = songUL.innerHTML + `<li>${song.replaceAll("%20", " ")}</li>`
+        songUL.innerHTML = songUL.innerHTML + `
+                                <li>
+                            <img class="invert" src="img/music.svg" alt="">
+                            <div class="info" >
+                                <div>${song.replaceAll("%20", " ")}</div>
+                                <div>Bikash</div>
+                            </div>
+                            <div class="playnow">
+                                <span>Play Now</span>
+                                <img class="invert" src="img/play.svg" alt="">
+                            </div>
+                        </li> `
 
     }
-    //Play the first song
+    // Add click event listeners to each song in the list
+    Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e => {
+        e.addEventListener("click", element => {
+            // Get the song name from the list item's .info child element and trim any whitespace
+            const track = e.querySelector(".info").firstElementChild.innerHTML.trim();
 
-    var audio = new Audio(songs[4]);
-    audio.play();
+            // Play the selected song using the playmusic function
+            playmusic(track);
+        });
+    });
 
-    audio.addEventListener("loadeddata", () => {
-        let duration = audio.duration;
-        console.log(duration);
-        //The duration variable hols the duration (in seconds ) of the audio clip 
+
+    //Attach event listenier to play,next and previous
+    play.addEventListener("click", () => {
+        if (currentsong.paused) {
+            currentsong.play()
+            play.src = "/img/pause.svg"
+        } else {
+            currentsong.pause()
+            play.src = "/img/play.svg"
+        }
     })
+
+
+    //Listen for timeupdate event
+    currentsong.addEventListener("timeupdate", () => {
+        // console.log(currentsong.currentTime , currentsong.duration);
+        document.querySelector(".songtime").innerHTML = `${convertSecondsToMinutes(currentsong.currentTime)}/${convertSecondsToMinutes( currentsong.duration)}`
+
+        document.querySelector(".circle").style.left = (currentsong.currentTime / currentsong.duration) *100 + "%";
+    })
+
+
+    //Add an event listener to seekbar
+    document.querySelector(".seekbar").addEventListener("click", e => {
+        let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
+        document.querySelector(".circle").style.left = percent + "%";
+        currentsong.currentTime = ((currentSong.duration) * percent) / 100
+    })
+        
+   
 }
 
-main() 
+main()
+
+
+
+
