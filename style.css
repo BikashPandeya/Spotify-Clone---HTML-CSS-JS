@@ -222,7 +222,11 @@ body {
 }
 
   .playnow span{
-    font-size: 11px;
-    width: 49px;
+    font-size: 14px;
+    width: 60px;
    
+  }
+
+  .info{
+    font-size: 14px;
   }
