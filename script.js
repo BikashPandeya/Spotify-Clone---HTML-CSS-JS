@@ -6,7 +6,7 @@ let currentfolder;
 
 function convertSecondsToMinutes(seconds) {
 
-    if(isNaN(seconds)){
+    if (isNaN(seconds)) {
         return "00:00"
     }
     // Use Math.floor to remove the decimal part of the seconds
@@ -31,7 +31,7 @@ async function getSongs(folder) {
     // 'fetch' is used to retrieve data from the server or API endpoint.
     // 'await' pauses the execution until the fetch operation completes.
     // This will return a Response object containing details of the HTTP response.
-    let a = await fetch(`http://127.0.0.1:3000${folder}`);
+    let a = await fetch(`http://127.0.0.1:3000/${folder}`);
     currentfolder = folder;
 
     // Log the Response object to the console to inspect its properties.
@@ -42,7 +42,7 @@ async function getSongs(folder) {
     // 'await' ensures the operation completes before assigning the result to 'response'.
     // Use this when the API response is not in JSON format but in plain text (e.g., HTML or raw data).
     let response = await a.text();
-    console.log(response)
+    // console.log(response)
     // At this point, 'response' contains the raw text data from the server.
     // You can log it to see the actual response body.
     // console.log(response);
@@ -75,48 +75,12 @@ async function getSongs(folder) {
             songs.push(element.href.split(`${folder}`)[1]);
         }
     }
- 
-    
-    // Return the array of song names/links that were extracted and filtered.
-    return songs;
-    
-}
 
-// Function to play music when a song is clicked
-const playmusic = (track , pause = false) => {
-    // SCENARIO 1: Using a single Audio object (currentsong)
-    // - Here, currentsong is reused for all tracks.
-    // - Updating currentsong.src will automatically stop any currently playing song and start the new one.
-    
-    currentsong.src = `${currentfolder}`+ track;
-
-    // SCENARIO 2: Creating a new Audio object inside the function
-    // - If we declare 'let audio = new Audio()' here, a new Audio object will be created each time.
-    // - This would allow multiple songs to play simultaneously unless the previous one is explicitly paused.
-    //
-    // Example of this alternate scenario:
-    // let audio = new Audio("/mysongs/" + track);
-    // audio.play();
-    if (pause == false) {
-        currentsong.play();
-        play.src = "/img/pause.svg"
-        
-    }
-    document.querySelector(".songinfo").innerHTML = track.replaceAll("%20", " ")
-    document.querySelector(".songtime").innerHTML = ` 00:00/00:00`
-};
-
-async function main() {
-
-    //To get the list of all the songs
-    let songs = await getSongs("/mysongs/chill/");
-    // console.log(songs);
-    playmusic(songs[0] , true)
-
+    //Show all songs in the playlist
     let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
-    console.log(songUL);
+    // console.log(songUL);
 
-
+    songUL.innerHTML = ""
     for (const song of songs) {
         songUL.innerHTML = songUL.innerHTML + `
                                 <li>
@@ -144,6 +108,108 @@ async function main() {
     });
 
 
+    // Return the array of song names/links that were extracted and filtered.
+    return songs;
+
+}
+
+// Function to play music when a song is clicked
+const playmusic = (track, pause = false) => {
+    // SCENARIO 1: Using a single Audio object (currentsong)
+    // - Here, currentsong is reused for all tracks.
+    // - Updating currentsong.src will automatically stop any currently playing song and start the new one.
+
+    currentsong.src = `${currentfolder}` + track;
+
+    // SCENARIO 2: Creating a new Audio object inside the function
+    // - If we declare 'let audio = new Audio()' here, a new Audio object will be created each time.
+    // - This would allow multiple songs to play simultaneously unless the previous one is explicitly paused.
+    //
+    // Example of this alternate scenario:
+    // let audio = new Audio("/mysongs/" + track);
+    // audio.play();
+    if (pause == false) {
+        currentsong.play();
+        play.src = "/img/pause.svg"
+
+    }
+    document.querySelector(".songinfo").innerHTML = track.replaceAll("%20", " ")
+    document.querySelector(".songtime").innerHTML = ` 00:00/00:00`
+};
+
+
+async function displayalbums() {
+    let a = await fetch(`http://127.0.0.1:3000/mysongs/`)
+    let response = await a.text();
+    let div = document.createElement("div")
+    div.innerHTML = response;
+    let anchors = div.getElementsByTagName("a")
+    console.log(anchors);
+    array = Array.from(anchors)
+    for (let index = 0; index < array.length; index++) {
+        const e = array[index];
+
+        if (e.href.includes("/mysongs/")) {
+            albumName = e.href.split("/mysongs/")[1]
+            let folder = albumName.slice(0, albumName.length - 1)
+            // console.log(folder);
+            
+            //Get the metadata of  the folder
+            let a = await fetch(`http://127.0.0.1:3000/mysongs/${folder}/info.json`)
+            let response = await a.json();
+            // console.log(response);
+           
+            
+            cardcontainer = document.querySelector(".cardContainer")
+            cardcontainer.innerHTML = cardcontainer.innerHTML + `       <div data-folder = "${folder}" class="card">   
+        <!-- Here folder is a data attribute . A data attribute is set in HTML using data-key="value" and accessed in JavaScript using element.dataset.key. -->
+                        <div class="play ">
+                            <img src="https://alfred.app/workflows/vdesabou/spotify-mini-player/icon.png" alt="">
+                            </div>
+                        <img src="/mysongs/${folder}/cover.png" alt="">
+                        <h2>${response.title}</h2>
+                        <p>${response.description}</p>
+                        
+                        </div>`
+        }
+
+    }
+    // console.log(div);
+
+
+        //Load the playlist when the card is clicked
+        Array.from(document.getElementsByClassName("card")).forEach(e => {
+            e.addEventListener("click", async item => {
+                // Here folder is a data attribute in card i html . A data attribute is set in HTML using data-key="value" and accessed in JavaScript using element.dataset.key.
+                // console.log(e);
+                //  console.log(item);
+    
+                folder = item.currentTarget.dataset.folder    //Here item is a card and current target indicates the click in card if clicked anywhere in card . Target gives data of img or paragraph inside card so current target is used
+                // console.log(folder);
+    
+                let songs = await getSongs(`/mysongs/${folder}/`);
+                playmusic(songs[0])
+            })
+    
+        })
+}
+    
+
+
+
+
+async function main() {
+
+    //To get the list of all the songs
+    let songs = await getSongs("/mysongs/chill/");
+    // console.log(songs);
+    playmusic(songs[0], true)
+
+
+    //display all albums in the page
+    displayalbums()
+
+
     //Attach event listenier to play,next and previous
     play.addEventListener("click", () => {
         if (currentsong.paused) {
@@ -157,11 +223,11 @@ async function main() {
 
 
     //Listen for timeupdate event
-    currentsong.addEventListener("timeupdate",async() => {
+    currentsong.addEventListener("timeupdate", async () => {
         // console.log(currentsong.currentTime , currentsong.duration);
-        document.querySelector(".songtime").innerHTML = `${convertSecondsToMinutes(currentsong.currentTime)}/${convertSecondsToMinutes( currentsong.duration)}`
+        document.querySelector(".songtime").innerHTML = `${convertSecondsToMinutes(currentsong.currentTime)}/${convertSecondsToMinutes(currentsong.duration)}`
 
-        document.querySelector(".circle").style.left = (currentsong.currentTime / currentsong.duration) *100 + "%";
+        document.querySelector(".circle").style.left = (currentsong.currentTime / currentsong.duration) * 100 + "%";
     })
 
 
@@ -171,10 +237,10 @@ async function main() {
         document.querySelector(".circle").style.left = percent + "%";
         currentsong.currentTime = ((currentsong.duration) * percent) / 100
     })
-        
-    
+
+
     //Add event listener for hamburger
-    document.querySelector(".hamburger").addEventListener("click" , () => {
+    document.querySelector(".hamburger").addEventListener("click", () => {
         document.querySelector(".left").style.left = "0"
     })
 
@@ -185,41 +251,56 @@ async function main() {
 
 
     //Add an event listener at previous and next
-    previous.addEventListener("click" ,async () =>{
+    previous.addEventListener("click", async () => {
         let songlist = await getSongs("/mysongs/chill/")
 
-        
+
         songindex = songlist.indexOf(currentsong.src.split("/chill/")[1]) - 1;
 
-        
-        
-        if(songindex>=0){
+
+
+        if (songindex >= 0) {
             playmusic(songlist[songindex])
 
         }
-        
+
     })
     //Add an event listener at previous and next
-    next.addEventListener("click" , async () =>{
+    next.addEventListener("click", async () => {
         let songlist = await getSongs("/mysongs/chill/")
         songindex = songlist.indexOf(currentsong.src.split("/chill/")[1]) + 1;
 
-        
-        
-        if(songindex+1 < songlist.length){
+
+
+        if (songindex + 1 < songlist.length) {
             playmusic(songlist[songindex])
 
         }
     })
 
     //Add an event to volume
-    document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change" , (e) => {
-        console.log("Setting volume to : " , e.target.value + "/100");
+    document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change", (e) => {
+        console.log("Setting volume to : ", e.target.value + "/100");
         //here e.target.value give value of tar
-        currentsong.volume = parseInt(e.target.value)/100
+        currentsong.volume = parseInt(e.target.value) / 100
     })
 
-    //Load the playlist when the card is clicked
+        //Add event listener to mute the song
+        document.querySelector(".volume > img").addEventListener("click" , e => {
+            // console.log(e.target);  
+            // Here target give the img of the target 
+            if(e.target.src.includes("volume.svg")){
+                e.target.src = "img/mute.svg"
+                currentsong.volume = 0
+            }
+            else{
+                e.target.src = "img/volume.svg"
+                currentsong.volume =0.5
+            }
+
+        })
+
+
 }
 
 main()

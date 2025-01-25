@@ -96,7 +96,7 @@ body {
   display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    max-height: 74vh;
+    max-height: 65vh;
     overflow-y: auto;
 }
 
@@ -260,7 +260,46 @@ body {
 
   .info{
     font-size: 14px;
+    max-width: 179px;
+
   }
+  /* .info::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .info::-webkit-scrollbar-thumb {
+    background-color:  #51615e;
+    border-radius: 10px;
+  }
+
+  .info::-webkit-scrollbar-track {
+    background: #2e3937;
+} */
+
+.info {
+ 
+  overflow: hidden; /* Hide overflowing text */
+  white-space: nowrap; /* Prevent text from wrapping */
+
+  position: relative; /* Ensure correct positioning for animation */
+}
+
+.info :first-child {
+  display: inline-block;
+  white-space: nowrap;
+  animation: move-text 8s linear infinite; /* Infinite scrolling animation */
+}
+
+@keyframes move-text {
+  0% {
+    transform: translateX(10%); /* Start outside the container from the right */
+  }
+  100% {
+    transform: translateX(-100%); /* Move out of the container from the left */
+  }
+}
+
+
 
   .songlist{
     height: 460px;
@@ -323,6 +362,8 @@ body {
 }
 
 
+
+
   .songtime{
     width: 125px;
 
@@ -360,6 +401,11 @@ body {
   justify-content: center;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+}
+
+.range input{
+  cursor: pointer;
 }
 
 @media(max-width : 1200px){
@@ -411,6 +457,7 @@ body {
   .cardContainer{
     margin: 0;
     justify-content: center;
+    /* max-height: 58vh; */
   }
 
   .loginbtn{
@@ -468,5 +515,20 @@ body {
 @media(max-width : 500px){
   .card{
     width: 80vw;
+  }
+
+  .cardContainer{
+    max-height: 56vh;
+
+  }
+
+  .spotifyPlaylists > h1 {
+    margin: 9px;
+  }
+
+  .playgraphics{
+    bottom: 8px;
+    justify-content: center;
+    align-items: center;
   }
 }
