@@ -1,10 +1,14 @@
 console.log("Lets write some js");
 // Define a single Audio object to manage playback globally
 let currentsong = new Audio();
-
+let currentfolder;
 
 
 function convertSecondsToMinutes(seconds) {
+
+    if(isNaN(seconds)){
+        return "00:00"
+    }
     // Use Math.floor to remove the decimal part of the seconds
     const totalSeconds = Math.floor(seconds);
 
@@ -21,13 +25,14 @@ function convertSecondsToMinutes(seconds) {
     return `${minutes}:${formattedSeconds}`;
 }
 
-async function getSongs() {
+async function getSongs(folder) {
 
     // Perform a GET request to the specified URL (http://127.0.0.1:3000/mysongs/)
     // 'fetch' is used to retrieve data from the server or API endpoint.
     // 'await' pauses the execution until the fetch operation completes.
     // This will return a Response object containing details of the HTTP response.
-    let a = await fetch("http://127.0.0.1:3000/mysongs/");
+    let a = await fetch(`http://127.0.0.1:3000${folder}`);
+    currentfolder = folder;
 
     // Log the Response object to the console to inspect its properties.
     // The Response object contains information like status, headers, etc.
@@ -37,7 +42,7 @@ async function getSongs() {
     // 'await' ensures the operation completes before assigning the result to 'response'.
     // Use this when the API response is not in JSON format but in plain text (e.g., HTML or raw data).
     let response = await a.text();
-
+    console.log(response)
     // At this point, 'response' contains the raw text data from the server.
     // You can log it to see the actual response body.
     // console.log(response);
@@ -62,14 +67,15 @@ async function getSongs() {
         // Get the current <a> element from the array of links.
         const element = as[index];
 
-        // Check if the href attribute of the <a> element ends with "mpeg".
-        // This is to filter for links that are likely to be MPEG audio files.
-        if (element.href.endsWith("mpeg")) {
+        // Check if the href attribute of the <a> element ends with "mp3".
+        // This is to filter for links that are likely to be mp3 audio files.
+        if (element.href.endsWith("mp3") || element.href.endsWith("m4a")) {
             // Extract the part of the href after "/mysongs/".
             // This isolates the song name or file name.
-            songs.push(element.href.split("/mysongs/")[1]);
+            songs.push(element.href.split(`${folder}`)[1]);
         }
     }
+ 
     
     // Return the array of song names/links that were extracted and filtered.
     return songs;
@@ -81,7 +87,8 @@ const playmusic = (track , pause = false) => {
     // SCENARIO 1: Using a single Audio object (currentsong)
     // - Here, currentsong is reused for all tracks.
     // - Updating currentsong.src will automatically stop any currently playing song and start the new one.
-    currentsong.src = "/mysongs/" + track;
+    
+    currentsong.src = `${currentfolder}`+ track;
 
     // SCENARIO 2: Creating a new Audio object inside the function
     // - If we declare 'let audio = new Audio()' here, a new Audio object will be created each time.
@@ -96,13 +103,13 @@ const playmusic = (track , pause = false) => {
         
     }
     document.querySelector(".songinfo").innerHTML = track.replaceAll("%20", " ")
-    document.querySelector(".songtime").innerHTML = `00:00/00:00`
+    document.querySelector(".songtime").innerHTML = ` 00:00/00:00`
 };
 
 async function main() {
 
     //To get the list of all the songs
-    let songs = await getSongs();
+    let songs = await getSongs("/mysongs/chill/");
     // console.log(songs);
     playmusic(songs[0] , true)
 
@@ -150,7 +157,7 @@ async function main() {
 
 
     //Listen for timeupdate event
-    currentsong.addEventListener("timeupdate", () => {
+    currentsong.addEventListener("timeupdate",async() => {
         // console.log(currentsong.currentTime , currentsong.duration);
         document.querySelector(".songtime").innerHTML = `${convertSecondsToMinutes(currentsong.currentTime)}/${convertSecondsToMinutes( currentsong.duration)}`
 
@@ -162,10 +169,57 @@ async function main() {
     document.querySelector(".seekbar").addEventListener("click", e => {
         let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
         document.querySelector(".circle").style.left = percent + "%";
-        currentsong.currentTime = ((currentSong.duration) * percent) / 100
+        currentsong.currentTime = ((currentsong.duration) * percent) / 100
     })
         
-   
+    
+    //Add event listener for hamburger
+    document.querySelector(".hamburger").addEventListener("click" , () => {
+        document.querySelector(".left").style.left = "0"
+    })
+
+    // Add an event listener for close button
+    document.querySelector(".close").addEventListener("click", () => {
+        document.querySelector(".left").style.left = "-120%"
+    })
+
+
+    //Add an event listener at previous and next
+    previous.addEventListener("click" ,async () =>{
+        let songlist = await getSongs("/mysongs/chill/")
+
+        
+        songindex = songlist.indexOf(currentsong.src.split("/chill/")[1]) - 1;
+
+        
+        
+        if(songindex>=0){
+            playmusic(songlist[songindex])
+
+        }
+        
+    })
+    //Add an event listener at previous and next
+    next.addEventListener("click" , async () =>{
+        let songlist = await getSongs("/mysongs/chill/")
+        songindex = songlist.indexOf(currentsong.src.split("/chill/")[1]) + 1;
+
+        
+        
+        if(songindex+1 < songlist.length){
+            playmusic(songlist[songindex])
+
+        }
+    })
+
+    //Add an event to volume
+    document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change" , (e) => {
+        console.log("Setting volume to : " , e.target.value + "/100");
+        //here e.target.value give value of tar
+        currentsong.volume = parseInt(e.target.value)/100
+    })
+
+    //Load the playlist when the card is clicked
 }
 
 main()

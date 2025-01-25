@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+Bhai+2:wght@600&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+:root{
+  --a : 0;  /*a is a variable and can be accessed by var(--a)*/
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -89,11 +93,11 @@ body {
 
 
 .cardContainer {
-    display: flex;
+  display: flex;
     gap: 10px;
     flex-wrap: wrap;
     max-height: 74vh;
-    overflow: scroll;
+    overflow-y: auto;
 }
 
 .card {
@@ -102,6 +106,7 @@ body {
     border-radius: 5px;
     background-color: #252525;
     position: relative;
+    transition: all 1s;
 }
 
 .card * {
@@ -117,6 +122,11 @@ body {
 .card:hover .play {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  .card:hover{
+    background-color: rgb(2, 65, 61);
+    cursor: pointer;
   }
   
   .play {
@@ -150,6 +160,8 @@ body {
 
 .buttons > *{
     margin: 0 12px;
+    justify-content: center;
+    align-items: center;
 }
 
   .signupbtn{
@@ -198,7 +210,7 @@ body {
     border-radius: 10px;
     width: 70vw;
     padding: 10px;
-    height: 40px;
+    min-height: 40px;
 }
 
 .songbtn{
@@ -257,26 +269,63 @@ body {
     margin-bottom: 44px;
   }
 
+.playgraphics{
+  position: relative;
+}
+
   .seekbar{
     height: 4px;
     width:98% ;
     background-color: rgb(86, 192, 192);
     border-radius: 10px;
     position: absolute;
-    bottom: 0;
+    bottom: -84px;
     margin: 6px;
     cursor: pointer;
   }
   
   .circle{
-    width: 10px;
-    height: 10px;
-    border-radius: 13px;
+ 
     background-color: rgb(86, 192, 192);
-    position: relative;
-    bottom: -37px;
+    width: 13px;
+    height: 13px;
+    border-radius: 13px;
+   
+    position: absolute;
+    bottom: -83px;
     left: 0%;
     transition: left 0.5s;
+
+  }
+
+  .songinfo{
+    width: 250px;
+  }
+  .songinfo {
+    overflow-x:auto;
+    white-space: nowrap;
+    position: relative;
+    
+  }
+
+
+  .songinfo::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .songinfo::-webkit-scrollbar-thumb {
+    background-color:  #51615e;
+    border-radius: 10px;
+  }
+
+  .songinfo::-webkit-scrollbar-track {
+    background: #2e3937;
+}
+
+
+  .songtime{
+    width: 125px;
+
   }
 
 
@@ -288,6 +337,136 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 20px 0;
   }
 
+.hamburger{
+  display: none;
+}
 
+.close{
+  display: none;
+}
+
+.timevolume{
+  display: flex;
+  
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.volume{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+@media(max-width : 1200px){
+  .left{
+    background-color: black;
+    position: absolute;
+    left: -100%;
+    transition: all 2s;
+    z-index: 1;
+    width: 373px;
+    padding: 0;
+  }
+
+  .right{
+    width: 100vw;
+  }
+
+  .playbar{
+    width: 88vw;
+  }
+.seekbar{
+  width: 90%;
+  bottom: -200px;
+}
+
+
+  .hamburger{
+    display: inline;
+    width: 40px;
+    cursor: pointer;
+  }
+  .mobilehamburger{
+    gap: 30px;
+  }
+
+  .close{
+    display: block;
+    position: absolute;
+    right: 23px;
+    top: 19px;
+    width: 30px;
+    cursor: pointer;
+  }
+
+  .card{
+    width: 44vw;
+  }
+
+  .cardContainer{
+    margin: 0;
+    justify-content: center;
+  }
+
+  .loginbtn{
+    width: 80px;
+  }
+
+  .buttons{
+    display: flex;
+  }
+
+  .abovebar{
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+  .circle{
+    bottom: -199px;
+    
+  }
+
+  .songinfo{
+    width: 80vw;
+    
+      overflow-x:auto;
+      white-space: nowrap;
+      position: relative;
+  }
+
+  .timevolume{
+    width: 130px;
+  }
+
+  .songtime{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .timevolume{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .volume{
+    width: 30px;
+  }
+}
+
+
+
+
+@media(max-width : 500px){
+  .card{
+    width: 80vw;
+  }
+}
