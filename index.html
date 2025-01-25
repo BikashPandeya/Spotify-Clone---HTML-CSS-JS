@@ -14,9 +14,13 @@
     <div class="container flex">
 
         <div class="left bg-black">
+            <div class="close">
+                <img src="img/close.svg" class="invert" alt="">
+            </div>
+
             <div class="home  bg-gray  rounded  m-1  p-1">
-                <div class="logo">
-                    <img class="invert" src="img/logo.svg" alt="">
+                <div class="logo" style="width: 110px;">
+                    <img class="invert" style="width: 110px;" src="img/logo.svg" alt="">
                 </div>
                 <ul>
 
@@ -55,16 +59,22 @@
         <div class="right  bg-black  bg-gray  rounded ">
             <div class="header">
                 <div class="nav">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div class="mobilehamburger flex justify-center items-center">
+
+                        <img src="img/hamburger.svg" class="hamburger invert">
+                        
+                        
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M15 6L9.70711 11.2929C9.37377 11.6262 9.20711 11.7929 9.20711 12C9.20711 12.2071 9.37377 12.3738 9.70711 12.7071L15 18"
                             stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        </svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M9 18L14.2929 12.7071C14.6262 12.3738 14.7929 12.2071 14.7929 12C14.7929 11.7929 14.6262 11.6262 14.2929 11.2929L9 6"
                             stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
+                        </svg>
+                    </div>
                 </div>
                 <div class="buttons">
                     <button class="signupbtn">Sign Up</button>
@@ -76,7 +86,7 @@
                 <h1>Spotify Playlists</h1>
 
                 <div class="cardContainer">
-                    <div class="card">
+                    <div data-folder = "chill" class="card">
                         <div class="play ">
                             <img src="https://alfred.app/workflows/vdesabou/spotify-mini-player/icon.png" alt="">
                         </div>
@@ -86,7 +96,7 @@
 
                     </div>
                     <div class="card">
-                        <div class="play ">
+                        <div data-folder="vibe" class="play ">
                             <img src="https://alfred.app/workflows/vdesabou/spotify-mini-player/icon.png" alt="">
                         </div>
                         <img src="https://spotify.freewebhostmost.com/songs/cs/cover.jpg" alt="">
@@ -101,12 +111,16 @@
             <div class="largeplaybar flex justify-center items-center">
 
                 <div class="playbar">
-                    <div class="seekbar">
 
-                    </div>
+                    <div class="playgraphics">
 
-                    <div class="circle">
-
+                        <div class="seekbar">
+    
+                        </div>
+    
+                        <div class="circle">
+    
+                        </div>
                     </div>
 
                     <div class="abovebar">
@@ -115,12 +129,22 @@
 
                         </div>
                         <div class="songbtn invert">
-                            <img id="previous" src="img/prevsong.svg" alt="">
-                            <img id="play" src="img/play.svg" alt="">
-                            <img id="next" src="img/nextsong.svg" alt="">
+                            <img width="35px" id="previous" src="img/prevsong.svg" alt="">
+                            <img width="35px" id="play" src="img/play.svg" alt="">
+                            <img width="35px" id="next" src="img/nextsong.svg" alt="">
                         </div>
-                        <div class="songtime">
+                        <div class="timevolume">
 
+                            <div class="songtime">
+                                
+                            </div>
+                            
+                            <div  class="volume invert">
+                                <img width="35px" src="img/volume.svg" alt="">
+                                <div class="range">
+                                    <input type="range" name="volume" id="">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
